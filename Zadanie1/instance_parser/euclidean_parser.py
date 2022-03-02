@@ -3,14 +3,16 @@ import numpy as np
 from Zadanie1.instance_parser.instance_parser import Parser
 
 
-def len_between_points(PointA, PointB):
-    len = (np.sqrt((PointA[1] - PointB[1]) ** 2 + (PointA[2] - PointB[2]) ** 2))
-    return len
+
 
 
 class EuclideanParser(Parser, ABC):
     dimension = 0
     matrix = 0
+
+    def len_between_points(PointA, PointB):
+        len = (np.sqrt((PointA[1] - PointB[1]) ** 2 + (PointA[2] - PointB[2]) ** 2))
+        return len
 
     def check(self, file):
         for line in file:
@@ -29,7 +31,7 @@ class EuclideanParser(Parser, ABC):
                 if i == j:
                     self.matrix[i][j] == 0
                 else:
-                    self.matrix[i][j] = len_between_points(points[i], points[j])
+                    self.matrix[i][j] = self.len_between_points(points[i], points[j])
         self.matrix = np.round(self.matrix)
 
     def parse_points(self, file):
