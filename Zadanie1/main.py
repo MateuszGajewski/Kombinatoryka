@@ -1,5 +1,7 @@
 from instance_parser import euclidean_parser
-
-print("A")
+from solvers.greedy_nearest_neighbor import GreedyNearestNeighbor
 p = euclidean_parser.EuclideanParser()
-p.parse("instances/kroB100.tsp")
+matrix = p.parse("instances/kroB100.tsp")
+solver = GreedyNearestNeighbor(matrix)
+solver.solve()
+
