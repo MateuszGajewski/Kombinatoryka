@@ -13,15 +13,15 @@ class GreedyNearestNeighbor(Solver):
 
     def __init__(self, array):
         self.matrix = array
-        self.cycle1 = np.array([np.ceil(self.matrix.shape[0] / 2), 1], dtype=int)
-        self.cycle2 = np.array([np.floor(self.matrix.shape[0] / 2), 1])
+        self.cycle1 = np.arange(np.ceil(self.matrix.shape[0] / 2), dtype=int)
+        self.cycle2 = np.arange(np.floor(self.matrix.shape[0] / 2))
         self.visited = np.zeros([self.matrix.shape[0], 1])
 
     def find_nearest_neighbour(self, index):
         minimum = math.inf
         min_index = None
         for i, j in zip(self.matrix[index][:], range(0, self.matrix.shape[0])):
-            if i < minimum and j != index:
+            if i < minimum and j != index and self.visited[j] == 0:
                 minimum = i
                 min_index = j
         return minimum, min_index
@@ -29,7 +29,9 @@ class GreedyNearestNeighbor(Solver):
     def solve(self):
         index = 0
         self.cycle1[0] = random.randint(0, self.matrix.shape[0])
-        while index < np.ceil(self.matrix.shape[0] / 2):
-            print(self.find_nearest_neighbour(self.cycle1[index]))
+        while index < np.ceil(self.matrix.shape[0] / 2) -1:
+            length, nearest = self.find_nearest_neighbour(self.cycle1[index])
             index += 1
-        return
+            self.cycle1[index] = nearest
+            self.visited[nearest] = 1
+        return self.cycle1
