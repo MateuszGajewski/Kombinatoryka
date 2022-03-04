@@ -3,12 +3,9 @@ import numpy as np
 from Zadanie1.instance_parser.instance_parser import Parser
 
 
-
-
-
 class EuclideanParser(Parser, ABC):
     dimension = 0
-    matrix = 0
+    matrix = np.array([])
 
     def len_between_points(self, pointA, pointB):
         length = (np.sqrt((pointA[1] - pointB[1]) ** 2 + (pointA[2] - pointB[2]) ** 2))
@@ -29,7 +26,7 @@ class EuclideanParser(Parser, ABC):
         for i in range(0, self.dimension):
             for j in range(0, self.dimension):
                 if i == j:
-                    self.matrix[i][j] == 0
+                    self.matrix[i][j] = 0
                 else:
                     self.matrix[i][j] = self.len_between_points(points[i], points[j])
         self.matrix = np.round(self.matrix)
@@ -43,12 +40,10 @@ class EuclideanParser(Parser, ABC):
             if point[0] == "EOF":
                 break
             print(point)
-            points[int(point[0]) - 1][0] = int(point[0])
-            points[int(point[0]) - 1][1] = int(point[1])
-            points[int(point[0]) - 1][2] = point[2]
+            points[int(point[0]) - 1] = [int(p) for p in point]
         return points
 
-    def parse(self, filename=str):
+    def parse(self, filename: str):
         tspfile = open(filename, 'r')
         self.check(tspfile)
         points = self.parse_points(tspfile)
