@@ -22,6 +22,7 @@ class GreedyNearestNeighbor(Solver):
             self.remove_from_free_points(new_point)
 
         print(self)
+        return [self.cycleA, self.cycleB]
 
     def find_point_to_add(self, cycle):
         closest = None

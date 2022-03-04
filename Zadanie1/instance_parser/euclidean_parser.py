@@ -6,6 +6,7 @@ from Zadanie1.instance_parser.instance_parser import Parser
 class EuclideanParser(Parser, ABC):
     dimension = 0
     matrix = np.array([])
+    points = None
 
     def len_between_points(self, pointA, pointB):
         length = (np.sqrt((pointA[1] - pointB[1]) ** 2 + (pointA[2] - pointB[2]) ** 2))
@@ -47,5 +48,9 @@ class EuclideanParser(Parser, ABC):
         tspfile = open(filename, 'r')
         self.check(tspfile)
         points = self.parse_points(tspfile)
+        self.points = points
         self.parse_to_matrix(points)
         return self.matrix
+
+    def get_points(self):
+        return self.points
