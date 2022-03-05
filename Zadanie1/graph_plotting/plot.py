@@ -11,7 +11,7 @@ class Plot:
         cycleB = cycles[1]
 
         fig, ax = plt.subplots(1)  # Prepare 2 plots
-        ax.set_title('Solutions' + self.name)
+        ax.set_title('Solutions ' + self.name)
         ax.scatter(points[:, 1], points[:, 2], s = 1)  # plot A
         for i in range(1, len(cyclea)):
             ax.plot([points[cyclea[i-1], 1], points[cyclea[i], 1]],
