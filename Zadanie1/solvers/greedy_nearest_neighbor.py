@@ -5,11 +5,6 @@ import numpy as np
 class GreedyNearestNeighbor(Solver):
 
     def solve(self):
-        # self.pick_initial_points()
-        """self.cycleA.append(72)
-        self.remove_from_free_points(72)
-        self.cycleB.append(18)
-        self.remove_from_free_points(18)"""
         self.pick_initial_points()
 
         while len(self.cycleA) < 0.5 * self.dimension:

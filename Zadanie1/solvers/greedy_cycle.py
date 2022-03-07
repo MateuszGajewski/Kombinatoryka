@@ -27,10 +27,12 @@ class GreedyCycle(Solver):
 
         for i, node in enumerate(cycle):
             for potential_point in self.free_points:
-                distance = self.matrix[node][potential_point]
-                distance += self.matrix[cycle[i-1]][potential_point]
-                if distance < best_distance:
-                    best_distance = distance
+                curr_distance = self.matrix[cycle[i-1]][node]  # existing edge
+                new_distance = self.matrix[node][potential_point]
+                new_distance += self.matrix[cycle[i-1]][potential_point]
+                added_distance = new_distance - curr_distance  # cost of breaking edge and adding two new ones
+                if added_distance < best_distance:
+                    best_distance = added_distance
                     best_point = potential_point
                     best_place = i  # break existing edge, insert between last and current nodes
 
