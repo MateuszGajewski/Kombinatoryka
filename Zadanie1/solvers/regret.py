@@ -16,7 +16,6 @@ class RegretSolver(Solver):
                 self.cycleB.insert(position, new_point)
                 self.remove_from_free_points(new_point)
 
-        print(self)
         return [self.cycleA, self.cycleB]
 
     def find_point_to_add(self, cycle):

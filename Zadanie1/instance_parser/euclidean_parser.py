@@ -15,7 +15,7 @@ class EuclideanParser(Parser, ABC):
     def check(self, file):
         for line in file:
             keywords = line.split()
-            print(keywords)
+            # print(keywords)
             if keywords[0] == "EDGE_WEIGHT_TYPE" and keywords[2] != "EUC_2D":
                 raise NotImplementedError
             if keywords[0] == "DIMENSION:":
@@ -40,7 +40,7 @@ class EuclideanParser(Parser, ABC):
             point = line.split()
             if point[0] == "EOF":
                 break
-            print(point)
+            # print(point)
             points[int(point[0]) - 1] = [int(p) for p in point]
         return points
 

@@ -16,7 +16,6 @@ class GreedyNearestNeighbor(Solver):
                 self.cycleB.insert(position, new_point)
                 self.remove_from_free_points(new_point)
 
-        print(self)
         return [self.cycleA, self.cycleB]
 
     def find_point_to_add(self, cycle):
@@ -24,17 +23,12 @@ class GreedyNearestNeighbor(Solver):
         best_distance = np.inf
         best_place = np.nan
 
-        for potential_point in self.free_points:
-            distance = self.matrix[cycle[-1]][potential_point]
-            if distance < best_distance:
-                best_distance = distance
-                closest = potential_point
-
-        best_distance = np.inf
         for i, node in enumerate(cycle):
-            distance = self.matrix[closest][node]
-            if distance < best_distance:
-                best_distance = distance
-                best_place = i+1  # insert behind current node
+            for potential_point in self.free_points:
+                distance = self.matrix[potential_point][node]
+                if distance < best_distance:
+                    closest = potential_point
+                    best_distance = distance
+                    best_place = i+1  # insert behind current node
 
         return closest, best_place
