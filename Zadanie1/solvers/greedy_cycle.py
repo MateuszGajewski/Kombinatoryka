@@ -1,4 +1,4 @@
-from Zadanie1.solvers.solver import Solver
+from utils.solvers.solver import Solver
 import numpy as np
 
 
