@@ -1,5 +1,33 @@
-def run():
-    pass
+from abc import abstractmethod
+
+from utils.solvers.solver import Solver
+
+class LocalSearchSolver(Solver):
+    @abstractmethod
+    def solve(self):
+        return NotImplementedError
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ░░░░░░░░░░░░░▄▄▀▀▀▀▀▀▄▄
 # ░░░░░░░░░░▄▄▀▄▄▄█████▄▄▀▄
@@ -22,3 +50,15 @@ def run():
 # ░█░░░░░▀▄▄▒▒▒▒▒▒▒▒▒▒▒▒▄▀░█░░░░░░░
 # ░░█░░░░░░░▀▄▄▄▒▒▒▒▒▒▄▀░░░░█░░░░░░
 # ░░░█░░░░░░░░░▌▀▀▀▀▀▀▐░░░░░▐▌░░░░░
+
+
+
+
+
+
+
+
+
+
+
+

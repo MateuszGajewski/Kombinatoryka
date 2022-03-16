@@ -1,8 +1,8 @@
-from utils.solvers.solver import Solver
+from Zadanie1.solvers.solver import Solver_euclidean
 import numpy as np
 
 
-class GreedyNearestNeighbor(Solver):
+class GreedyNearestNeighbor(Solver_euclidean):
 
     def solve(self):
         self.pick_initial_points()
