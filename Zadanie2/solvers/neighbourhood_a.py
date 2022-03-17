@@ -40,7 +40,7 @@ class Neighbourhood_a(Neighbourhood):
         for i in range(0, len(cycle)):
             for j in range(0, len(cycle)):
                 if i != j:
-                    solutions.append([i, j, self.calc_swap_inside_inside(i, j, cycle)])
+                    solutions.append([i, j, self.calc_swap_inside(i, j, cycle)])
         return solutions
 
     def calc_swap_between(self, i, j):
