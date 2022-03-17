@@ -13,9 +13,8 @@ class Neighbourhood(ABC):
     @abstractmethod
     def get_moves(self):
         #moves inside
+        pass
 
         #movesBetween
 
-    @abstractmethod
-    def make_move(self):
-        raise NotImplementedError
+
