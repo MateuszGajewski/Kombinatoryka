@@ -65,6 +65,7 @@ class Neighbourhood_a(Neighbourhood):
         for i in range(0, len(self.cycleA)):
             for j in range(0, len(self.cycleB)):
                 solutions.append([i, j, self.calc_swap_between(i, j)])
+        return solutions
 
                 
 
@@ -73,15 +74,11 @@ class Neighbourhood_a(Neighbourhood):
         solutions = []
         solutions.append(self.get_moves_in_cycle(self.cycleA))
         solutions.append(self.get_moves_in_cycle(self.cycleB))
+        solutions.append(self.swap_between_cycles())
         return solutions
 
 
-        
 
-
-
-
-        return solutions
 
 
 
