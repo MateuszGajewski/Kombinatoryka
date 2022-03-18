@@ -3,6 +3,10 @@ from abc import abstractmethod
 from utils.solvers.solver import Solver
 
 class LocalSearchSolver(Solver):
+
+    def __init__(self, neighbourhood):
+        self.neighbourhood = neighbourhood
+
     @abstractmethod
     def solve(self):
         return NotImplementedError

@@ -6,31 +6,52 @@ class Neighbourhood_a(Neighbourhood):
 
     def calc_swap_inside(self, i, j, cycle):
         delta = 0
-        if i != j and abs(i - j) != 1:
-            old = self.matrix[cycle[i] - 1][cycle[i - 1] - 1] + \
-                  self.matrix[cycle[i] - 1][cycle[(i + 1) % len(cycle)] - 1] + \
-                  self.matrix[cycle[j] - 1][cycle[j - 1] - 1] + \
-                  self.matrix[cycle[j] - 1][cycle[(j + 1) % len(cycle)] - 1]
 
-            new = self.matrix[cycle[j] - 1][cycle[i - 1] - 1] + \
-                  self.matrix[cycle[j] - 1][cycle[(i + 1) % len(cycle)] - 1] + \
-                  self.matrix[cycle[i] - 1][cycle[j - 1] - 1] + \
-                  self.matrix[cycle[i] - 1][cycle[(j + 1) % len(cycle)] - 1]
+        if (i == 0 and j == 49) or (i == 49 and j == 0):
+            if i == 0 and j == 49:
+                old = self.matrix[cycle[i] ][cycle[(i + 1) % len(cycle)] ] + \
+                      self.matrix[cycle[j] ][cycle[(j - 1) % len(cycle)] ]
+                new = self.matrix[cycle[j] ][cycle[((i + 1) % len(cycle))] ] + \
+                      self.matrix[cycle[i]][cycle[(j - 1 ) % len(cycle)] ]
+                delta = -old + new
+
+            elif i == 49 and j == 0:
+                #print(i, j)
+
+                old = self.matrix[cycle[j]  ][cycle[(j + 1) % len(cycle)]  ] + \
+                      self.matrix[cycle[i]  ][cycle[(i - 1) % len(cycle)]  ]
+                new = self.matrix[cycle[i]  ][cycle[(j + 1) % len(cycle)]  ] + \
+                      self.matrix[cycle[j]  ][cycle[(i - 1) % len(cycle)]  ]
+                delta = -old + new
+            return delta
+        elif i != j and abs(i - j) != 1:
+            #print(i, j)
+
+            old = self.matrix[cycle[i]  ][cycle[(i -1 ) % len(cycle)]  ] + \
+                  self.matrix[cycle[i]  ][cycle[(i + 1) % len(cycle)]  ] + \
+                  self.matrix[cycle[j]  ][cycle[(j - 1 ) % len(cycle)]  ] + \
+                  self.matrix[cycle[j]  ][cycle[(j + 1) % len(cycle)]  ]
+
+            new = self.matrix[cycle[j]  ][cycle[(i - 1 ) % len(cycle)]  ] + \
+                  self.matrix[cycle[j]  ][cycle[(i + 1) % len(cycle)]  ] + \
+                  self.matrix[cycle[i]  ][cycle[(j - 1 ) % len(cycle)]  ] + \
+                  self.matrix[cycle[i]  ][cycle[(j + 1) % len(cycle)]  ]
             delta = -old + new
-
-
+            return delta
         elif i != j:
             if i < j:
-                old = self.matrix[cycle[i] - 1][cycle[i - 1] - 1] + \
-                      self.matrix[cycle[j] - 1][cycle[(j + 1) % len(cycle)] - 1]
-                new = self.matrix[cycle[j] - 1][cycle[i - 1] - 1] + \
-                      self.matrix[cycle[i] - 1][cycle[(j + 1) % len(cycle)] - 1]
+                #print(i, j)
+                old = self.matrix[cycle[i] ][cycle[(i - 1 ) % len(cycle)]] + \
+                      self.matrix[cycle[j] ][cycle[(j + 1) % len(cycle)] ]
+                new = self.matrix[cycle[j] ][cycle[(i -1  ) % len(cycle)] ] + \
+                      self.matrix[cycle[i] ][cycle[(j + 1) % len(cycle)] ]
 
             else:
-                old = self.matrix[cycle[j] - 1][cycle[j - 1] - 1] + \
-                      self.matrix[cycle[i] - 1][cycle[(i + 1) % len(cycle)] - 1]
-                new = self.matrix[cycle[i] - 1][cycle[j - 1] - 1] + \
-                      self.matrix[cycle[j] - 1][cycle[(i + 1) % len(cycle)] - 1]
+                #print(i, j)
+                old = self.matrix[cycle[j] ][cycle[(j -1 ) % len(cycle)]  ] + \
+                      self.matrix[cycle[i]  ][cycle[(i + 1) % len(cycle)]  ]
+                new = self.matrix[cycle[i]  ][cycle[(j - 1 ) % len(cycle)]  ] + \
+                      self.matrix[cycle[j]  ][cycle[(i + 1) % len(cycle)]  ]
             delta = -old + new
         return delta
     
@@ -51,15 +72,15 @@ class Neighbourhood_a(Neighbourhood):
         return solutions
 
     def calc_swap_between(self, i, j):
-        old = self.matrix[self.cycleA[i] - 1][self.cycleA[i - 1] - 1] + \
-              self.matrix[self.cycleA[i] - 1][self.cycleA[(i + 1) % len(self.cycleA)] - 1] + \
-              self.matrix[self.cycleB[j] - 1][self.cycleB[j - 1] - 1] + \
-              self.matrix[self.cycleB[j] - 1][self.cycleB[(j + 1) % len(self.cycleB)] - 1]
+        old = self.matrix[self.cycleA[i]  ][self.cycleA[((i -1) % len(self.cycleA))]  ] + \
+              self.matrix[self.cycleA[i]  ][self.cycleA[(i + 1) % len(self.cycleA)]  ] + \
+              self.matrix[self.cycleB[j]  ][self.cycleB[(j - 1) % len(self.cycleB)]  ] + \
+              self.matrix[self.cycleB[j]  ][self.cycleB[(j + 1) % len(self.cycleB)]  ]
 
-        new = self.matrix[self.cycleB[j] - 1][self.cycleA[i - 1] - 1] + \
-              self.matrix[self.cycleB[j] - 1][self.cycleA[(i + 1) % len(self.cycleA)] - 1] + \
-              self.matrix[self.cycleA[i] - 1][self.cycleB[j - 1] - 1] + \
-              self.matrix[self.cycleA[i] - 1][self.cycleB[(j + 1) % len(self.cycleB)] - 1]
+        new = self.matrix[self.cycleB[j]  ][self.cycleA[((i - 1) % len(self.cycleA))]  ] + \
+              self.matrix[self.cycleB[j]  ][self.cycleA[(i + 1) % len(self.cycleA)]  ] + \
+              self.matrix[self.cycleA[i]  ][self.cycleB[(j - 1) % len(self.cycleB)]  ] + \
+              self.matrix[self.cycleA[i]  ][self.cycleB[(j + 1) % len(self.cycleB)]  ]
         return -old +new
 
 
@@ -78,17 +99,20 @@ class Neighbourhood_a(Neighbourhood):
 
     def get_best_move(self):
         solutions = []
-        cycleA = self.get_moves_in_cycle(self.cycleA, 0, 0, 1)
+        swap_cycle = self.swap_between_cycles(0, 0, 1)
+
         cycleB = self.get_moves_in_cycle(self.cycleB, 0, 0, 1)
-        swap_cycle = self.swap_between_cycles(22, 0, -1)
+        cycleA = self.get_moves_in_cycle(self.cycleA, 0, 0, 1)
+
         cycleA = np.asarray(cycleA, dtype=int)
         indA = np.argwhere(cycleA[:, 2] == (np.min(cycleA[:, 2])))[0, 0]
         cycleB = np.asarray(cycleB, dtype=int)
-        indB = np.argwhere(cycleA[:, 2] == (np.min(cycleA[:, 2])))[0, 0]
+        indB = np.argwhere(cycleB[:, 2] == (np.min(cycleB[:, 2])))[0, 0]
         cycleS = np.asarray(swap_cycle, dtype=int)
-        indS = np.argwhere(cycleA[:, 2] == (np.min(cycleA[:, 2])))[0, 0]
-        print(indA)
-        print(cycleA[indA])
+        indS = np.argwhere(cycleS[:, 2] == (np.min(cycleS[:, 2])))[0, 0]
+        print(cycleA[indA, 2], cycleB[indB, 2], cycleS[indS, 2])
+        #return [cycleA[indA], 'cycleA']
+
         if cycleA[indA, 2] < cycleB[indB, 2] and cycleA[indA, 2] < cycleS[indS, 2]:
             return [cycleA[indA], 'cycleA']
         elif cycleB[indB][2] < cycleS[indS][2]:
