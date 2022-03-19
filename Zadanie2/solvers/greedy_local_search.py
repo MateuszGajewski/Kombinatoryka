@@ -12,8 +12,12 @@ class GreedyLocalSolver(LocalSearchSolver):
 
             if move is not None and move.delta < 0:
                 self.neighbourhood.make_move(move)
-
             else:
+                # no further improvements
+                break
+
+            if not (len(self.neighbourhood.cycleA) == len(self.neighbourhood.cycleB) == 50):
+                # something went wrong
                 break
 
             i += 1
