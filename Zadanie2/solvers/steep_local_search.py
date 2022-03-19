@@ -7,7 +7,7 @@ class GreedyLocalSolver(LocalSearchSolver):
         print(self.neighbourhood.matrix)
         i = 0
         while i < 400:
-            move = self.neighbourhood.get_greedy_random_move()
+            move = self.neighbourhood.get_best_move()
             print(move)
 
             if move is not None and  move[0][2] < 0:
@@ -15,7 +15,6 @@ class GreedyLocalSolver(LocalSearchSolver):
 
             else:
                 break
-
             i += 1
         return [self.neighbourhood.cycleA, self.neighbourhood.cycleB]
 
