@@ -10,10 +10,14 @@ class GreedyLocalSolver(LocalSearchSolver):
             move = self.neighbourhood.get_greedy_random_move()
             print(move)
 
-            if move is not None and  move[0][2] < 0:
+            if move is not None and move.delta < 0:
                 self.neighbourhood.make_move(move)
-
             else:
+                # no further improvements
+                break
+
+            if not (len(self.neighbourhood.cycleA) == len(self.neighbourhood.cycleB) == 50):
+                # something went wrong
                 break
 
             i += 1

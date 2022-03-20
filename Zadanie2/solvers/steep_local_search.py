@@ -10,13 +10,10 @@ class GreedyLocalSolver(LocalSearchSolver):
             move = self.neighbourhood.get_best_move()
             print(move)
 
-            if move is not None and  move[0][2] < 0:
+            if move is not None and move.delta < 0:
                 self.neighbourhood.make_move(move)
 
             else:
                 break
             i += 1
         return [self.neighbourhood.cycleA, self.neighbourhood.cycleB]
-
-
-
