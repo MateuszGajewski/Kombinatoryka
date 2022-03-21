@@ -30,7 +30,6 @@ class Neighbourhood(ABC):
         self.val = 0
 
     def make_move(self, move):
-
         if move.type == MoveType.NODE_SWAP_IN_A:
             self.cycleA[move.s1], self.cycleA[move.s2] = self.cycleA[move.s2], self.cycleA[move.s1]
             # tmp = self.cycleA[move[0][0]]

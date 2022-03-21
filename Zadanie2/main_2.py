@@ -4,6 +4,7 @@ from utils.graph_plotting.plot import Plot
 from Zadanie2.solvers.neighbourhood_a import NeighbourhoodA
 from Zadanie2.solvers.neighbourhood_b import NeighbourhoodB
 from Zadanie2.solvers.greedy_local_search import GreedyLocalSolver
+from Zadanie2.solvers.random_local_search import RandomLocalSearchSolver
 import numpy as np
 
 p = euclidean_parser.EuclideanParser()
@@ -19,6 +20,8 @@ plot.draw(cycles, points)
 
 n = NeighbourhoodA(matrix, cycles[0], cycles[1])
 nB = NeighbourhoodB(matrix, cycles[0], cycles[1])
+nRA = NeighbourhoodA(matrix, cycles[0], cycles[1])
+nRB = NeighbourhoodB(matrix, cycles[0], cycles[1])
 
 a_greedy_solver = GreedyLocalSolver(n)
 a_cycles = a_greedy_solver.solve()
@@ -33,3 +36,10 @@ print(len(b_cycles[0]))
 print(len(b_cycles[1]))
 plot2 = Plot("greedy B")
 plot2.draw(b_cycles, points)
+
+random_solver = RandomLocalSearchSolver(nRA, nRB)
+r_cycles = random_solver.solve()
+print(len(r_cycles[0]))
+print(len(r_cycles[1]))
+plot3 = Plot("Random")
+plot3.draw(r_cycles, points)
