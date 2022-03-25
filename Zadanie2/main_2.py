@@ -1,8 +1,8 @@
 from utils.instance_parser import euclidean_parser
 from Zadanie1.solvers.greedy_nearest_neighbor import GreedyNearestNeighbor
 from utils.graph_plotting.plot import Plot
-from Zadanie2.solvers.neighbourhood_a import NeighbourhoodA
-from Zadanie2.solvers.neighbourhood_b import NeighbourhoodB
+from Zadanie2.entity.move_type import MoveType
+from Zadanie2.solvers.neighbourhood import Neighbourhood
 from Zadanie2.solvers.greedy_local_search import GreedyLocalSolver
 from Zadanie2.solvers.random_local_search import RandomLocalSearchSolver
 import numpy as np
@@ -18,12 +18,15 @@ cycles = gc_solver.solve()
 plot = Plot("nn")
 plot.draw(cycles, points)
 
-n = NeighbourhoodA(matrix, cycles[0], cycles[1])
-nB = NeighbourhoodB(matrix, cycles[0], cycles[1])
-nRA = NeighbourhoodA(matrix, cycles[0], cycles[1])
-nRB = NeighbourhoodB(matrix, cycles[0], cycles[1])
+a_moves = [MoveType.NODE_SWAP_IN_A, MoveType.NODE_SWAP_IN_B, MoveType.NODE_SWAP_BETWEEN_AB]
+b_moves = [MoveType.EDGE_SWAP_IN_A, MoveType.EDGE_SWAP_IN_B, MoveType.NODE_SWAP_BETWEEN_AB]
+random_moves = [mt for mt in MoveType]
 
-a_greedy_solver = GreedyLocalSolver(n)
+nA = Neighbourhood(matrix, cycles[0], cycles[1], available_moves=a_moves)
+nB = Neighbourhood(matrix, cycles[0], cycles[1], available_moves=b_moves)
+nR = Neighbourhood(matrix, cycles[0], cycles[1], available_moves=random_moves)
+
+a_greedy_solver = GreedyLocalSolver(nA)
 a_cycles = a_greedy_solver.solve()
 print(len(a_cycles[0]))
 print(len(a_cycles[1]))
@@ -37,7 +40,7 @@ print(len(b_cycles[1]))
 plot2 = Plot("greedy B")
 plot2.draw(b_cycles, points)
 
-random_solver = RandomLocalSearchSolver(nRA, nRB)
+random_solver = RandomLocalSearchSolver(nR)
 r_cycles = random_solver.solve()
 print(len(r_cycles[0]))
 print(len(r_cycles[1]))
