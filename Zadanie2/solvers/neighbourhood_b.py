@@ -9,6 +9,12 @@ import random
 # Opcja z zamianą krawędzi i wymianą wierzchołkami między cyklami
 class NeighbourhoodB(Neighbourhood):
 
+    def __init__(self, matrix, cycleA, cycleB):
+        super().__init__(matrix, cycleA, cycleB)
+        self.available_moves = [MoveType.EDGE_SWAP_IN_A,
+                                MoveType.EDGE_SWAP_IN_B,
+                                MoveType.NODE_SWAP_BETWEEN_AB]
+
     def calc_swap_inside(self, e1: Edge, e2: Edge, cycle):
         old = e1.cost + e2.cost
         new = self.matrix[cycle[e1.v1]][cycle[e2.v1]] + self.matrix[cycle[e1.v2]][cycle[e2.v2]]
@@ -64,65 +70,39 @@ class NeighbourhoodB(Neighbourhood):
                 solutions.append(Move(real_i, real_j, self.calc_swap_between(real_i, real_j), move_type))
         return solutions
 
-    def get_best_move(self):
-        # wymiana wierzchołkami pomiędzy cyklami
-        swap_moves = self.swap_between_cycles(0, 0, 1, move_type=MoveType.NODE_SWAP_BETWEEN_AB)
-        # zamiany krawędzi w poszczególnych cyklach
-        cycleA_moves = self.get_moves_in_cycle(self.cycleA, 0, 0, 1, move_type=MoveType.EDGE_SWAP_IN_A)
-        cycleB_moves = self.get_moves_in_cycle(self.cycleB, 0, 0, 1, move_type=MoveType.EDGE_SWAP_IN_B)
-
-        cycleA_deltas = np.asarray([move.delta for move in cycleA_moves], dtype=int)
-        idA = np.argwhere(cycleA_deltas == np.min(cycleA_deltas))[0, 0]
-        bestA = cycleA_moves[idA]
-
-        cycleB_deltas = np.asarray([move.delta for move in cycleB_moves], dtype=int)
-        idB = np.argwhere(cycleB_deltas == np.min(cycleB_deltas))[0, 0]
-        bestB = cycleB_moves[idB]
-
-        swap_deltas = np.asarray([move.delta for move in swap_moves], dtype=int)
-        idS = np.argwhere(swap_deltas == np.min(swap_deltas))[0, 0]
-        bestS = swap_moves[idS]
-
-        if bestA < bestB and bestA < bestB:
-            return bestA
-        elif bestB < bestS:
-            return bestB
+    def get_moves_of_type(self, move_type, i=0, j=0, step=1):
+        if move_type == MoveType.NODE_SWAP_BETWEEN_AB:
+            return self.swap_between_cycles(i, j, step, move_type)
+        elif move_type in [MoveType.NODE_SWAP_IN_A, MoveType.EDGE_SWAP_IN_A]:
+            return self.get_moves_in_cycle(self.cycleA, i, j, step, move_type)
+        elif move_type in [MoveType.NODE_SWAP_IN_B, MoveType.EDGE_SWAP_IN_B]:
+            return self.get_moves_in_cycle(self.cycleB, i, j, step, move_type)
         else:
-            return bestS
+            return []
+
+    def get_best_move(self):
+        best_move = Move(None, None, np.inf, None)
+        for move_type in self.available_moves:
+            moves = self.get_moves_of_type(move_type)
+            if not moves:
+                continue  # list of moves was empty
+            deltas = np.asarray([move.delta for move in moves], dtype=int)
+            ind = np.argwhere(deltas == np.min(deltas))[0, 0]
+            if np.min(deltas) < best_move.delta:
+                best_move = moves[ind]
+        return best_move
 
     def get_greedy_random_move(self):
-        n_options = 3
-        r = random.randint(0, n_options)
-        for _ in range(0, n_options):
-            if r % n_options == 0:
-                i = random.randint(0, len(self.cycleA))
-                j = random.randint(0, len(self.cycleB))
-                step = random.choice([-1, 1])
-                moves = np.asarray(self.swap_between_cycles(i, j, step, move_type=MoveType.NODE_SWAP_BETWEEN_AB))
-                deltas = np.asarray([move.delta for move in moves], dtype=int)
-                if any(deltas < 0):
-                    improvements = moves[deltas < 0]
-                    first_best_move = improvements[0]
-                    return first_best_move
-            elif r % n_options == 1:
-                i = random.randint(0, len(self.cycleA))
-                j = random.randint(0, len(self.cycleB))
-                step = random.choice([-1, 1])
-                moves = np.asarray(self.get_moves_in_cycle(self.cycleA, i, j, step, MoveType.EDGE_SWAP_IN_A))
-                deltas = np.asarray([move.delta for move in moves], dtype=int)
-                if any(deltas < 0):
-                    improvements = moves[deltas < 0]
-                    first_best_move = improvements[0]
-                    return first_best_move
-            elif r % n_options == 2:
-                i = random.randint(0, len(self.cycleA))
-                j = random.randint(0, len(self.cycleB))
-                step = random.choice([-1, 1])
-                moves = np.asarray(self.get_moves_in_cycle(self.cycleB, i, j, step, MoveType.EDGE_SWAP_IN_B))
-                deltas = np.asarray([move.delta for move in moves], dtype=int)
-                if any(deltas < 0):
-                    improvements = moves[deltas < 0]
-                    first_best_move = improvements[0]
-                    return first_best_move
-            r += 1
+        shuffled_move_types = np.random.permutation(self.available_moves)
+        for move_type in shuffled_move_types:
+            i = random.randint(0, len(self.cycleA))
+            j = random.randint(0, len(self.cycleB))
+            step = random.choice([-1, 1])
+            moves = np.asarray(self.get_moves_of_type(move_type, i, j, step))
+            deltas = np.asarray([move.delta for move in moves], dtype=int)
+            if any(deltas < 0):
+                improvements = moves[deltas < 0]
+                first_best_move = improvements[0]
+                return first_best_move
+        # if all available_moves were considered, but no improvement was found, return None
         return None

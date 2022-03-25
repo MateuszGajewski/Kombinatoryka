@@ -25,28 +25,17 @@ class Neighbourhood(ABC):
         self.matrix = matrix
         self.cycleA = cycleA
         self.cycleB = cycleB
-        self.valA = 0
-        self.valB = 0
-        self.val = 0
+        self.available_moves = [move_type for move_type in MoveType]
 
     def make_move(self, move):
         if move.type == MoveType.NODE_SWAP_IN_A:
             self.cycleA[move.s1], self.cycleA[move.s2] = self.cycleA[move.s2], self.cycleA[move.s1]
-            # tmp = self.cycleA[move[0][0]]
-            # self.cycleA[move[0][0]] = self.cycleA[move[0][1]]
-            # self.cycleA[move[0][1]] = tmp
 
         elif move.type == MoveType.NODE_SWAP_IN_B:
             self.cycleB[move.s1], self.cycleB[move.s2] = self.cycleB[move.s2], self.cycleB[move.s1]
-            # tmp = self.cycleB[move[0][0]]
-            # self.cycleB[move[0][0]] = self.cycleB[move[0][1]]
-            # self.cycleB[move[0][1]] = tmp
 
         elif move.type == MoveType.NODE_SWAP_BETWEEN_AB:
             self.cycleA[move.s1], self.cycleB[move.s2] = self.cycleB[move.s2], self.cycleA[move.s1]
-            # tmp = self.cycleA[move[0][0]]
-            # self.cycleA[move[0][0]] = self.cycleB[move[0][1]]
-            # self.cycleB[move[0][1]] = tmp
 
         elif move.type == MoveType.EDGE_SWAP_IN_A:
             self.cycleA = swap_edges(self.cycleA, move.s1, move.s2)
@@ -56,6 +45,10 @@ class Neighbourhood(ABC):
 
         else:
             print("Outstanding move, but it's not implemented")
+            
+    def update_cycles(self, cycleA, cycleB):
+        self.cycleA = cycleA
+        self.cycleB = cycleB
 
     @abstractmethod
     def get_best_move(self):
