@@ -21,7 +21,7 @@ class RandomLocalSearchSolver(LocalSearchSolver):
         curr_val = 0
         curr_min = 0
         i = 0
-        while i < 200:
+        while i < 100:
             move = self.get_random_move()
             # print(move.s1.v1, move.s2, move.type)
             self.neighbourhood.make_move(move)
@@ -32,7 +32,7 @@ class RandomLocalSearchSolver(LocalSearchSolver):
                 best_cycle = [self.neighbourhood.cycleA.copy(),
                               self.neighbourhood.cycleB.copy()]
             i += 1
-            if i % 50 == 0:
-                print(f"Random #{i}")
+            # if i % 50 == 0:
+            #     print(f"Random #{i}")
 
         return best_cycle

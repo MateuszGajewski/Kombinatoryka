@@ -1,14 +1,13 @@
 from Zadanie2.solvers.local_search_solver import LocalSearchSolver
 
 
-class GreedyLocalSolver(LocalSearchSolver):
+class SteepLocalSolver(LocalSearchSolver):
 
     def solve(self):
-        print(self.neighbourhood.matrix)
         i = 0
         while i < 400:
             move = self.neighbourhood.get_best_move()
-            print(move)
+            # print(move)
 
             if move is not None and move.delta < 0:
                 self.neighbourhood.make_move(move)
