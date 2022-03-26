@@ -18,12 +18,12 @@ class Solution:
         return f"""
 ---- Solved with {self.solver_name} ----
 > Results:
-\tmean:\tmin:\tmax:
-\t{np.min(self.results)};\t{np.max(self.results)};\t{np.mean(self.results)};
+\tmean:\t\tmin:\t\tmax:
+\t{np.mean(self.results)}; \t{np.min(self.results)}; \t{np.max(self.results)};
 
 > Times:
-\tmean:\tmin:\tmax:
-\t{np.min(self.times)};\t{np.max(self.times)};\t{np.mean(self.times)};
+\tmean:\t\tmin:\t\tmax:
+\t{np.mean(self.times)}; \t{np.min(self.times)}; \t{np.max(self.times)};
 """
 
     def find(self, matrix, instance):
@@ -33,8 +33,8 @@ class Solution:
         problem_solver = self.solver(neighbourhood)
         cycles = problem_solver.solve()
 
-        stop = time.time()
-        self.times.append(stop - start)
+        duration = round(time.time() - start, 3)
+        self.times.append(duration)
         self.calculate_result(matrix, cycles)
         print(self.solver_name, "done")
 
@@ -43,6 +43,9 @@ class Solution:
         for cycle in cycles:
             for i, node in enumerate(cycle):
                 total += matrix[cycle[i-1], node]
+
+        if not (len(cycles[0]) == len(cycles[1]) == 50):
+            return
 
         if total < self.best_result:
             self.best_result = total
