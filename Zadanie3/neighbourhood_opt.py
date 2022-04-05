@@ -31,6 +31,26 @@ class Neighbourhood_opt(ABC):
         self.available_moves = available_moves
         self.best_moves = None
 
+    def validate_move_and_make(self, move):
+        made = 0
+        if move.type == MoveType.NODE_SWAP_IN_A:
+            if move.delta == self.calc_node_swap_inside(move.s1, move.s2, self.cycleA):
+                self.make_move(move)
+            else:
+                made = -1
+        elif move.type == MoveType.NODE_SWAP_IN_B:
+            if move.delta == self.calc_node_swap_inside(move.s1, move.s2, self.cycleB):
+                self.make_move(move)
+            else:
+                made = -1
+        elif move.type == MoveType.NODE_SWAP_BETWEEN_AB:
+            if move.delta == self.calc_swap_between(move.s1, move.s2):
+                self.make_move(move)
+            else:
+                made = -1
+        self.best_moves.pop(0)
+        return made
+
     def make_move(self, move):
         if move.type == MoveType.NODE_SWAP_IN_A:
             self.cycleA[move.s1], self.cycleA[move.s2] = self.cycleA[move.s2], self.cycleA[move.s1]
@@ -79,13 +99,32 @@ class Neighbourhood_opt(ABC):
     def update_moves(self, move):
         #generate new moves
         if move.type == MoveType.NODE_SWAP_IN_A:
-            pass
+            moves_a = self.get_node_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.NODE_SWAP_IN_A, is_update = True,
+                                                   update_range = [move.s1])
+            moves_b = self.get_node_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.NODE_SWAP_IN_A, is_update = True,
+                                                   update_range = [move.s2])
+
         elif move.type == MoveType.NODE_SWAP_IN_B:
-            pass
+            moves_a = self.get_node_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.NODE_SWAP_IN_B, is_update=True,
+                                                   update_range=[move.s1])
+            moves_b = self.get_node_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.NODE_SWAP_IN_B, is_update=True,
+                                                   update_range=[move.s2])
+
+        elif move.type == MoveType.NODE_SWAP_BETWEEN_AB:
+            moves_a = self.get_node_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.NODE_SWAP_IN_A, is_update = True,
+                                                   update_range = [move.s1])
+            moves_b = self.get_node_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.NODE_SWAP_IN_B, is_update = True,
+                                                   update_range = [move.s2])
+        moves = np.concatenate((moves_a, moves_b))
+        self.best_moves = np.concatenate((self.best_moves, moves))
+        self.best_moves = sorted(self.best_moves, key=lambda a: a.delta)
+
 
     def get_best_move(self):
         if self.best_moves is None:
             self.best_moves = self.generate_all_moves()
+        if len(self.best_moves) == 0:
+            return None
         return self.best_moves[0]
 
 
@@ -111,6 +150,7 @@ class Neighbourhood_opt(ABC):
 
     def get_node_swaps_in_cycle(self, cycle, s1, s2, step, move_type, is_update = False, update_range = []):
         # solution = [Move(który, z którym, jaka zmiana, jaki typ)]
+
         solutions = []
         if is_update is False:
             range_ = range(s1, np.sign(step) * (s1 + len(self.cycleA)), step)

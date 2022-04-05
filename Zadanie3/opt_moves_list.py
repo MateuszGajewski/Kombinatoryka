@@ -6,16 +6,21 @@ class OptLocalSolver(LocalSearchSolver):
     def solve(self):
 
         self.neighbourhood.generate_all_moves()
-        move = self.neighbourhood.get_best_move()
         i = 0
-        self.neighbourhood.update_moves(move)
 
-        """while i < 400:
+        while i < 400:
             move = self.neighbourhood.get_best_move()
             # print(move)
 
             if move is not None and move.delta < 0:
-                self.neighbourhood.make_move(move)
+                print(move)
+                made = self.neighbourhood.validate_move_and_make(move)
+                while made == -1:
+                    move = self.neighbourhood.get_best_move()
+                    if move is None or move.delta > 0:
+                        break
+                    made = self.neighbourhood.validate_move_and_make(move)
+
                 self.neighbourhood.update_moves(move)
             else:
                 # no further improvements
@@ -25,6 +30,6 @@ class OptLocalSolver(LocalSearchSolver):
                 # something went wrong
                 break
 
-            i += 1"""
+            i += 1
         return [self.neighbourhood.cycleA, self.neighbourhood.cycleB]
 

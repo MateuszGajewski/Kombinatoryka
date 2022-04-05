@@ -27,14 +27,14 @@ def run():
         #Solution("Steep (nodes)", SteepLocalSolver, a_moves),
         #Solution("Greedy (edges)", GreedyLocalSolver, b_moves, Neighbourhood_opt),
         #Solution("Steep (edges)", SteepLocalSolver, b_moves)
-        Solution("TEST", OptLocalSolver, b_moves, Neighbourhood_opt)
+        Solution("TEST", OptLocalSolver, a_moves, Neighbourhood_opt)
         ]
 
     for i in range(0, 1):
         print(f"Running iteration #{i}")
 
-        instance = GreedyCycle(matrix, starting_point=i).solve()
-        #instance = RandomSolver(matrix, starting_point=i).solve()
+        #instance = GreedyCycle(matrix, starting_point=i).solve()
+        instance = RandomSolver(matrix, starting_point=i).solve()
 
         for solution in solutions:
             solution.find(matrix, instance)
