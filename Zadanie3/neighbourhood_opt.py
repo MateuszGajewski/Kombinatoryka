@@ -77,6 +77,7 @@ class Neighbourhood_opt(ABC):
         self.best_moves = moves
 
     def update_moves(self, move):
+        #generate new moves
         if move.type == MoveType.NODE_SWAP_IN_A:
             pass
         elif move.type == MoveType.NODE_SWAP_IN_B:
@@ -108,11 +109,14 @@ class Neighbourhood_opt(ABC):
         else:
             return []
 
-    def get_node_swaps_in_cycle(self, cycle, s1, s2, step, move_type):
+    def get_node_swaps_in_cycle(self, cycle, s1, s2, step, move_type, is_update = False, update_range = []):
         # solution = [Move(który, z którym, jaka zmiana, jaki typ)]
         solutions = []
-
-        for i in range(s1, np.sign(step) * (s1 + len(self.cycleA)), step):
+        if is_update is False:
+            range_ = range(s1, np.sign(step) * (s1 + len(self.cycleA)), step)
+        else:
+            range_ = update_range
+        for i in range_:
             for j in range(s2, (s2 + len(self.cycleB)) * np.sign(step), step):
                 if i != j:
                     real_i = i % len(cycle)
@@ -122,11 +126,15 @@ class Neighbourhood_opt(ABC):
 
         return solutions
 
-    def get_edge_swaps_in_cycle(self, cycle, s1, s2, step, move_type):
+    def get_edge_swaps_in_cycle(self, cycle, s1, s2, step, move_type, is_update = False, update_range = []):
         # solution = [Move(który, z którym, jaka zmiana, jaki typ)]
         solutions = []
+        if is_update is False:
+            range_ = range(s1, np.sign(step) * (s1 + len(self.cycleA)), step)
+        else:
+            range_ = update_range
 
-        for i in range(s1, np.sign(step) * (s1 + len(self.cycleA)), step):
+        for i in range_:
             for j in range(s2, (s2 + len(self.cycleB)) * np.sign(step), step):
                 if i != j:
                     real_i = i % len(cycle)
