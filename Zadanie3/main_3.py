@@ -27,7 +27,7 @@ def run():
         #Solution("Steep (nodes)", SteepLocalSolver, a_moves),
         #Solution("Greedy (edges)", GreedyLocalSolver, b_moves, Neighbourhood_opt),
         #Solution("Steep (edges)", SteepLocalSolver, b_moves)
-        Solution("TEST", OptLocalSolver, a_moves, Neighbourhood_opt)
+        Solution("TEST", OptLocalSolver, b_moves, Neighbourhood_opt)
         ]
 
     for i in range(0, 1):

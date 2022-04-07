@@ -34,6 +34,8 @@ class Neighbourhood_opt(ABC):
     def validate_move_and_make(self, move):
         made = 0
         if move.type == MoveType.NODE_SWAP_IN_A:
+            #print("m", move, move.s1)
+
             if move.delta == self.calc_node_swap_inside(move.s1, move.s2, self.cycleA):
                 self.make_move(move)
             else:
@@ -45,6 +47,16 @@ class Neighbourhood_opt(ABC):
                 made = -1
         elif move.type == MoveType.NODE_SWAP_BETWEEN_AB:
             if move.delta == self.calc_swap_between(move.s1, move.s2):
+                self.make_move(move)
+            else:
+                made = -1
+        elif move.type == MoveType.EDGE_SWAP_IN_A:
+            if move.delta == self.calc_edge_swap_inside(move.s1, move.s2, self.cycleA):
+                self.make_move(move)
+            else:
+                made = -1
+        elif move.type == MoveType.EDGE_SWAP_IN_B:
+            if move.delta == self.calc_edge_swap_inside(move.s1, move.s2, self.cycleB):
                 self.make_move(move)
             else:
                 made = -1
@@ -100,21 +112,36 @@ class Neighbourhood_opt(ABC):
         #generate new moves
         if move.type == MoveType.NODE_SWAP_IN_A:
             moves_a = self.get_node_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.NODE_SWAP_IN_A, is_update = True,
-                                                   update_range = [move.s1])
+                                                   update_range = [move.s1 - 1, move.s1, move.s1+1])
             moves_b = self.get_node_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.NODE_SWAP_IN_A, is_update = True,
-                                                   update_range = [move.s2])
+                                                   update_range = [move.s2 - 1, move.s2, move.s2 + 1])
 
         elif move.type == MoveType.NODE_SWAP_IN_B:
             moves_a = self.get_node_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.NODE_SWAP_IN_B, is_update=True,
-                                                   update_range=[move.s1])
+                                                   update_range=[move.s1 - 1, move.s1, move.s1+1])
             moves_b = self.get_node_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.NODE_SWAP_IN_B, is_update=True,
-                                                   update_range=[move.s2])
+                                                   update_range=[move.s2 - 1, move.s2, move.s2 + 1])
 
         elif move.type == MoveType.NODE_SWAP_BETWEEN_AB:
             moves_a = self.get_node_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.NODE_SWAP_IN_A, is_update = True,
-                                                   update_range = [move.s1])
+                                                   update_range = [move.s1 - 1, move.s1, move.s1+1])
             moves_b = self.get_node_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.NODE_SWAP_IN_B, is_update = True,
-                                                   update_range = [move.s2])
+                                                   update_range = [move.s2 - 1, move.s2, move.s2 + 1])
+        elif move.type == MoveType.EDGE_SWAP_IN_A:
+            moves_a = self.get_edge_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
+                                                   update_range=[move.s1.v1 - 1, move.s1.v1, move.s1.v1 + 1,
+                                                                 move.s1.v2 - 1, move.s1.v2, move.s1.v2 + 1])
+            moves_b = self.get_edge_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
+                                                   update_range=[move.s2.v1 - 1, move.s2.v1, move.s2.v1 + 1,
+                                                                 move.s2.v2 - 1, move.s2.v2, move.s2.v2 + 1])
+
+        elif move.type == MoveType.EDGE_SWAP_IN_B:
+            moves_a = self.get_edge_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.EDGE_SWAP_IN_B, is_update=True,
+                                                   update_range=[move.s1.v1 - 1, move.s1.v1, move.s1.v1 + 1,
+                                                                 move.s1.v2 - 1, move.s1.v2, move.s1.v2 + 1])
+            moves_b = self.get_edge_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.EDGE_SWAP_IN_B, is_update=True,
+                                                   update_range=[move.s2.v1 - 1, move.s2.v1, move.s2.v1 + 1,
+                                                                 move.s2.v2 - 1, move.s2.v2, move.s2.v2 + 1])
         moves = np.concatenate((moves_a, moves_b))
         self.best_moves = np.concatenate((self.best_moves, moves))
         self.best_moves = sorted(self.best_moves, key=lambda a: a.delta)
