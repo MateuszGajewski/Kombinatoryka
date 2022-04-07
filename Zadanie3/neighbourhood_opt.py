@@ -132,15 +132,15 @@ class Neighbourhood_opt(ABC):
                                                    update_range = [move.s2 - 1, move.s2, move.s2 + 1])
         elif move.is_edge_swap():
             if (move.s2.v1 == len(self.cycleA) - 1) and (move.s2.v2 == 0):
-                update_range = range(move.s1.v1-1, move.s2.v1+1)
+                affected_range = range(move.s1.v1-1, move.s2.v1+1)
             else:
-                update_range = range(move.s1.v1-1, move.s2.v2+2)
+                affected_range = range(move.s1.v1-1, move.s2.v2+2)
 
             old_best_moves = np.copy(self.best_moves)
             # update all Best Moves that were Edge Swaps and had at least one of the Edges in update range
             for i, b_move in enumerate(old_best_moves):
                 if b_move.is_edge_swap():
-                    edges_affected = was_edge_swap_in_range(b_move, update_range)
+                    edges_affected = was_edge_swap_in_range(b_move, affected_range)
                     if any(edges_affected):
                         if edges_affected[0]:
                             b_move.s1 = b_move.s1.invert()
@@ -150,11 +150,18 @@ class Neighbourhood_opt(ABC):
 
             if move.type == MoveType.EDGE_SWAP_IN_A:
                 moves_a = self.get_edge_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
-                                                       update_range=[*update_range])
+                                                       update_range=[move.s1.v1 - 1, move.s1.v1, move.s1.v1 + 1,
+                                                                     move.s1.v2 - 1, move.s1.v2, move.s1.v2 + 1])
+                moves_b = self.get_edge_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
+                                                       update_range=[move.s2.v1 - 1, move.s2.v1, move.s2.v1 + 1,
+                                                                     move.s2.v2 - 1, move.s2.v2, move.s2.v2 + 1])
             elif move.type == MoveType.EDGE_SWAP_IN_B:
-                moves_a = self.get_edge_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
-                                                       update_range=[*update_range])
-            moves_b = []
+                moves_a = self.get_edge_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.EDGE_SWAP_IN_B, is_update=True,
+                                                       update_range=[move.s1.v1 - 1, move.s1.v1, move.s1.v1 + 1,
+                                                                     move.s1.v2 - 1, move.s1.v2, move.s1.v2 + 1])
+                moves_b = self.get_edge_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.EDGE_SWAP_IN_B, is_update=True,
+                                                       update_range=[move.s2.v1 - 1, move.s2.v1, move.s2.v1 + 1,
+                                                                     move.s2.v2 - 1, move.s2.v2, move.s2.v2 + 1])
 
         moves = np.concatenate((moves_a, moves_b))
         new_moves = np.concatenate((self.best_moves, moves))
