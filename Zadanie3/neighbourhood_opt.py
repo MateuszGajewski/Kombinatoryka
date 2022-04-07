@@ -21,6 +21,9 @@ def swap_edges(cycle, e1, e2):
         new_order = slice1 + slice2 + slice3
     return new_order
 
+def was_edge_swap_in_range(move, _range):
+    return [move.s1.v1 in _range, move.s2.v1 in _range]  # [True/False, True/False]
+
 
 class Neighbourhood_opt(ABC):
 
@@ -106,7 +109,7 @@ class Neighbourhood_opt(ABC):
                 moves = np.concatenate((moves, tmp_moves))
         moves = sorted(moves, key=lambda a: a.delta)
         #moves = np.asarray(moves)
-        self.best_moves = moves
+        self.best_moves = (np.unique(moves)).tolist()
 
     def update_moves(self, move):
         #generate new moves
@@ -127,34 +130,44 @@ class Neighbourhood_opt(ABC):
                                                    update_range = [move.s1 - 1, move.s1, move.s1+1])
             moves_b = self.get_node_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.NODE_SWAP_IN_B, is_update = True,
                                                    update_range = [move.s2 - 1, move.s2, move.s2 + 1])
-        elif move.type == MoveType.EDGE_SWAP_IN_A:
-            moves_a = self.get_edge_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
-                                                   update_range=[move.s1.v1 - 1, move.s1.v1, move.s1.v1 + 1,
-                                                                 move.s1.v2 - 1, move.s1.v2, move.s1.v2 + 1])
-            moves_b = self.get_edge_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
-                                                   update_range=[move.s2.v1 - 1, move.s2.v1, move.s2.v1 + 1,
-                                                                 move.s2.v2 - 1, move.s2.v2, move.s2.v2 + 1])
+        elif move.is_edge_swap():
+            if (move.s2.v1 == len(self.cycleA) - 1) and (move.s2.v2 == 0):
+                update_range = range(move.s1.v1-1, move.s2.v1+1)
+            else:
+                update_range = range(move.s1.v1-1, move.s2.v2+2)
 
-        elif move.type == MoveType.EDGE_SWAP_IN_B:
-            moves_a = self.get_edge_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.EDGE_SWAP_IN_B, is_update=True,
-                                                   update_range=[move.s1.v1 - 1, move.s1.v1, move.s1.v1 + 1,
-                                                                 move.s1.v2 - 1, move.s1.v2, move.s1.v2 + 1])
-            moves_b = self.get_edge_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.EDGE_SWAP_IN_B, is_update=True,
-                                                   update_range=[move.s2.v1 - 1, move.s2.v1, move.s2.v1 + 1,
-                                                                 move.s2.v2 - 1, move.s2.v2, move.s2.v2 + 1])
+            old_best_moves = np.copy(self.best_moves)
+            # update all Best Moves that were Edge Swaps and had at least one of the Edges in update range
+            for i, b_move in enumerate(old_best_moves):
+                if b_move.is_edge_swap():
+                    edges_affected = was_edge_swap_in_range(b_move, update_range)
+                    if any(edges_affected):
+                        if edges_affected[0]:
+                            b_move.s1 = b_move.s1.invert()
+                        if edges_affected[1]:
+                            b_move.s2 = b_move.s2.invert()
+                        self.best_moves[i] = b_move
+
+            if move.type == MoveType.EDGE_SWAP_IN_A:
+                moves_a = self.get_edge_swaps_in_cycle(self.cycleA, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
+                                                       update_range=[*update_range])
+            elif move.type == MoveType.EDGE_SWAP_IN_B:
+                moves_a = self.get_edge_swaps_in_cycle(self.cycleB, 0, 0, 1, MoveType.EDGE_SWAP_IN_A, is_update=True,
+                                                       update_range=[*update_range])
+            moves_b = []
+
         moves = np.concatenate((moves_a, moves_b))
-        self.best_moves = np.concatenate((self.best_moves, moves))
-        self.best_moves = sorted(self.best_moves, key=lambda a: a.delta)
+        new_moves = np.concatenate((self.best_moves, moves))
+        new_moves = sorted(new_moves, key=lambda a: a.delta)
+        self.best_moves = (np.unique(new_moves)).tolist()
 
 
     def get_best_move(self):
         if self.best_moves is None:
-            self.best_moves = self.generate_all_moves()
+            self.generate_all_moves()
         if len(self.best_moves) == 0:
             return None
         return self.best_moves[0]
-
-
 
     def get_moves_of_type(self, move_type, i=0, j=0, step=1):
         if move_type == MoveType.NODE_SWAP_IN_A:
