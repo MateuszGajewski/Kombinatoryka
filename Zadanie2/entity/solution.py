@@ -5,7 +5,7 @@ from Zadanie2.solvers.neighbourhood import Neighbourhood
 
 
 class Solution:
-    def __init__(self, solver_name: str, solver: LocalSearchSolver.__class__, move_types):
+    def __init__(self, solver_name: str, solver: LocalSearchSolver.__class__, move_types, neighbourhood):
         self.solver_name = solver_name
         self.solver = solver
         self.move_types = move_types
@@ -13,6 +13,7 @@ class Solution:
         self.times = []
         self.best_result = np.inf
         self.best_instance = None
+        self.neighbourhood_class = neighbourhood
 
     def __str__(self):
         return f"""
@@ -29,7 +30,7 @@ class Solution:
     def find(self, matrix, instance):
         start = time.time()
 
-        neighbourhood = Neighbourhood(matrix, instance[0], instance[1], self.move_types)
+        neighbourhood = self.neighbourhood_class(matrix, instance[0], instance[1], self.move_types)
         problem_solver = self.solver(neighbourhood)
         cycles = problem_solver.solve()
 

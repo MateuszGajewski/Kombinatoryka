@@ -15,3 +15,7 @@ class Edge:
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def invert(self):
+        self.v1, self.v2 = self.v2, self.v1
+        return self

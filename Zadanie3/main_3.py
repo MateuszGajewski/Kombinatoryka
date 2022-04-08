@@ -7,7 +7,8 @@ from Zadanie2.entity.solution import Solution
 from Zadanie2.solvers.greedy_local_search import GreedyLocalSolver
 from Zadanie2.solvers.steep_local_search import SteepLocalSolver
 from Zadanie2.solvers.random_local_search import RandomLocalSearchSolver
-from Zadanie2.solvers.neighbourhood import Neighbourhood
+from Zadanie3.neighbourhood_opt import Neighbourhood_opt
+from Zadanie3.opt_moves_list import OptLocalSolver
 import numpy as np
 
 
@@ -24,15 +25,16 @@ def run():
         #Solution("Random Wandering", RandomLocalSearchSolver, random_moves),
         #Solution("Greedy (nodes)", GreedyLocalSolver, a_moves),
         #Solution("Steep (nodes)", SteepLocalSolver, a_moves),
-        Solution("Greedy (edges)", GreedyLocalSolver, b_moves, Neighbourhood),
+        #Solution("Greedy (edges)", GreedyLocalSolver, b_moves, Neighbourhood_opt),
         #Solution("Steep (edges)", SteepLocalSolver, b_moves)
+        Solution("TEST", OptLocalSolver, b_moves, Neighbourhood_opt)
         ]
 
     for i in range(0, 1):
         print(f"Running iteration #{i}")
 
-        instance = GreedyCycle(matrix, starting_point=i).solve()
-        #instance = RandomSolver(matrix, starting_point=i).solve()
+        #instance = GreedyCycle(matrix, starting_point=i).solve()
+        instance = RandomSolver(matrix, starting_point=i).solve()
 
         for solution in solutions:
             solution.find(matrix, instance)
