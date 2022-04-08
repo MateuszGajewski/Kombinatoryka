@@ -8,6 +8,7 @@ class Move:
         self.s2 = s2
         self.delta = delta  # distance gain compared to current solution
         self.type = move_type  # `NODE SWAP {A,B,AB}` or `EDGE SWAP {A,B}` or None
+        self.direction = None #Only for candidate move
 
     def __str__(self):
         return f"Move: {self.s1} <-> {self.s2} ({self.type}); Delta = {self.delta}"

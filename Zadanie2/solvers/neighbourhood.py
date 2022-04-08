@@ -95,8 +95,25 @@ class Neighbourhood(ABC):
         elif move_type == MoveType.EDGE_SWAP_IN_B:
             return self.get_edge_swaps_in_cycle(self.cycleB, i, j, step, move_type)
 
+        elif move_type == MoveType.CANDIDATE_IN_A:
+            pass
+        elif move_type == MoveType.CANDIDATE_IN_B:
+            pass
+
         else:
             return []
+
+    def get_n_closest_points(self, cycle, s, n):
+        point = cycle[s]
+        distances = self.matrix[point - 1, :]
+        distances = np.argsort(distances)
+        for i in distances:
+            pass
+
+    def get_candidate_moves_in_cycle(self, cycle, s1, s2, move_type):
+        for i in range(s1, np.sign(1) * (s1 + len(self.cycleA)), 1):
+            pass
+
 
     def get_node_swaps_in_cycle(self, cycle, s1, s2, step, move_type):
         # solution = [Move(który, z którym, jaka zmiana, jaki typ)]

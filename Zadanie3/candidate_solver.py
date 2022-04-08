@@ -1,12 +1,12 @@
 from Zadanie2.solvers.local_search_solver import LocalSearchSolver
 
 
-class OptLocalSolver(LocalSearchSolver):
+class CandidateSolver(LocalSearchSolver):
 
     def solve(self):
 
         self.neighbourhood.generate_all_moves()
-        i = 0
+        """i = 0
 
         while i < 400:
             move = self.neighbourhood.get_best_move()
@@ -27,6 +27,6 @@ class OptLocalSolver(LocalSearchSolver):
                 break
 
 
-            i += 1
-        return [self.neighbourhood.cycleA, self.neighbourhood.cycleB]
 
+            i += 1"""
+        return [self.neighbourhood.cycleA, self.neighbourhood.cycleB]
