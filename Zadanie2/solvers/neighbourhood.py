@@ -46,9 +46,21 @@ class Neighbourhood(ABC):
         elif move.type == MoveType.EDGE_SWAP_IN_B:
             self.cycleB = swap_edges(self.cycleB, move.s1, move.s2)
 
+        elif move.type == MoveType.CANDIDATE_IN_A:
+            pass
+
+        elif move.type == MoveType.CANDIDATE_IN_B:
+            pass
+
         else:
             print("Outstanding move, but it's not implemented")
-            
+    def make_candidate_move(self, cycle, move):
+        if move.direction == 1:
+            pass
+
+
+
+
     def update_cycles(self, cycleA, cycleB):
         self.cycleA = cycleA
         self.cycleB = cycleB
@@ -63,6 +75,7 @@ class Neighbourhood(ABC):
             ind = np.argwhere(deltas == np.min(deltas))[0, 0]
             if np.min(deltas) < best_move.delta:
                 best_move = moves[ind]
+        return best_move
 
     def get_greedy_random_move(self):
         shuffled_move_types = np.random.permutation(self.available_moves)
@@ -96,23 +109,41 @@ class Neighbourhood(ABC):
             return self.get_edge_swaps_in_cycle(self.cycleB, i, j, step, move_type)
 
         elif move_type == MoveType.CANDIDATE_IN_A:
-            pass
+            return self.get_candidate_moves_in_cycle(self.cycleA, 0, move_type, 10)
         elif move_type == MoveType.CANDIDATE_IN_B:
-            pass
-
+            return self.get_candidate_moves_in_cycle(self.cycleA, 0, move_type, 10)
         else:
             return []
 
     def get_n_closest_points(self, cycle, s, n):
         point = cycle[s]
-        distances = self.matrix[point - 1, :]
+        results = []
+        distances = self.matrix[point, :]
         distances = np.argsort(distances)
         for i in distances:
-            pass
+            if i in cycle and i != point:
+                results.append(i)
+        return results[0:n]
 
-    def get_candidate_moves_in_cycle(self, cycle, s1, s2, move_type):
+    def calc_candidates(self, i, j, cycle, direction):
+        old = self.matrix[i][(i+direction)% len(cycle)] + self.matrix[j][(j+direction)% len(cycle)]
+        new = self.matrix[i][j] + self.matrix[(i+1)% len(cycle)][(j+1)% len(cycle)]
+        return -old + new
+
+
+    def get_candidate_moves_in_cycle(self, cycle, s1, move_type, n):
+        solutions = []
         for i in range(s1, np.sign(1) * (s1 + len(self.cycleA)), 1):
-            pass
+            real_i = i % len(cycle)
+            nearest_n = self.get_n_closest_points(cycle, real_i, n)
+            for j in nearest_n:
+                if real_i != j and abs(real_i - j) != 1:
+                    delta = self.calc_candidates(real_i, j, cycle, 1)
+                    solutions.append(Move(real_i, j, delta, move_type, 1))
+                    delta = self.calc_candidates(real_i, j, cycle, -1)
+                    solutions.append(Move(real_i, j, delta, move_type, -1))
+        #print(solutions)
+        return solutions
 
 
     def get_node_swaps_in_cycle(self, cycle, s1, s2, step, move_type):
