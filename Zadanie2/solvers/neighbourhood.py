@@ -47,16 +47,33 @@ class Neighbourhood(ABC):
             self.cycleB = swap_edges(self.cycleB, move.s1, move.s2)
 
         elif move.type == MoveType.CANDIDATE_IN_A:
-            pass
+            self.cycleA = self.make_candidate_move(self.cycleA, move)
 
         elif move.type == MoveType.CANDIDATE_IN_B:
-            pass
+            self.cycleB = self.make_candidate_move(self.cycleB, move)
+
 
         else:
             print("Outstanding move, but it's not implemented")
     def make_candidate_move(self, cycle, move):
+        if move.s1 > move.s2:
+            move.s1, move.s2 = move.s2, move.s1
+        print(move)
         if move.direction == 1:
-            pass
+            p1 = cycle[:move.s1+1]
+            p2 = cycle[move.s1+1: move.s2+1]
+            p2.reverse()
+            p3 = cycle[move.s2+1:]
+
+            cycle = p1 + p2 + p3
+        else:
+            p1 = cycle[:move.s1]
+            p2 = cycle[move.s1: move.s2]
+            p2.reverse()
+            p3 = cycle[move.s2:]
+            cycle = p1 + p2 + p3
+        return cycle
+
 
 
 
@@ -111,7 +128,7 @@ class Neighbourhood(ABC):
         elif move_type == MoveType.CANDIDATE_IN_A:
             return self.get_candidate_moves_in_cycle(self.cycleA, 0, move_type, 10)
         elif move_type == MoveType.CANDIDATE_IN_B:
-            return self.get_candidate_moves_in_cycle(self.cycleA, 0, move_type, 10)
+            return self.get_candidate_moves_in_cycle(self.cycleB, 0, move_type, 10)
         else:
             return []
 
@@ -126,8 +143,8 @@ class Neighbourhood(ABC):
         return results[0:n]
 
     def calc_candidates(self, i, j, cycle, direction):
-        old = self.matrix[i][(i+direction)% len(cycle)] + self.matrix[j][(j+direction)% len(cycle)]
-        new = self.matrix[i][j] + self.matrix[(i+1)% len(cycle)][(j+1)% len(cycle)]
+        old = self.matrix[cycle[i]][cycle[(i+direction)% len(cycle)]] + self.matrix[cycle[j]][cycle[(j+direction)% len(cycle)]]
+        new = self.matrix[cycle[i]][cycle[j]] + self.matrix[cycle[(i+direction) % len(cycle)]][cycle[(j+direction)% len(cycle)]]
         return -old + new
 
 
@@ -137,11 +154,12 @@ class Neighbourhood(ABC):
             real_i = i % len(cycle)
             nearest_n = self.get_n_closest_points(cycle, real_i, n)
             for j in nearest_n:
-                if real_i != j and abs(real_i - j) != 1:
-                    delta = self.calc_candidates(real_i, j, cycle, 1)
-                    solutions.append(Move(real_i, j, delta, move_type, 1))
-                    delta = self.calc_candidates(real_i, j, cycle, -1)
-                    solutions.append(Move(real_i, j, delta, move_type, -1))
+                real_j = cycle.index(j)
+                if real_i != real_j and abs(real_i - real_j) != 1:
+                    delta = self.calc_candidates(real_i, real_j, cycle, 1)
+                    solutions.append(Move(real_i, real_j, delta, move_type, 1))
+                    delta = self.calc_candidates(real_i, real_j, cycle, -1)
+                    solutions.append(Move(real_i, real_j, delta, move_type, -1))
         #print(solutions)
         return solutions
 

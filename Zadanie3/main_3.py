@@ -37,8 +37,8 @@ def run():
     for i in range(0, 1):
         print(f"Running iteration #{i}")
 
-        #instance = GreedyCycle(matrix, starting_point=i).solve()
-        instance = RandomSolver(matrix, starting_point=i).solve()
+        instance = GreedyCycle(matrix, starting_point=i).solve()
+        #instance = RandomSolver(matrix, starting_point=i).solve()
 
         for solution in solutions:
             solution.find(matrix, instance)
