@@ -1,3 +1,6 @@
+import time
+import numpy as np
+
 from Zadanie1.solvers.greedy_cycle import GreedyCycle
 from Zadanie1.solvers.random_solver import RandomSolver
 from utils.instance_parser import euclidean_parser
@@ -9,14 +12,21 @@ from Zadanie2.solvers.greedy_local_search import GreedyLocalSolver
 from Zadanie2.solvers.steep_local_search import SteepLocalSolver
 from Zadanie2.solvers.random_local_search import RandomLocalSearchSolver
 from Zadanie3.neighbourhood_opt import Neighbourhood_opt
+from Zadanie3.neighbourhood_candidate import NeighbourhoodCandidate
 from Zadanie3.opt_moves_list import OptLocalSolver
 from Zadanie3.candidate_solver import CandidateSolver
-import numpy as np
 
+
+def calculate_cycle_len(matrix, cycles):
+    total = 0
+    for cycle in cycles:
+        for i, node in enumerate(cycle):
+            total += matrix[cycle[i-1]][node]
+    return total
 
 def run():
     p = euclidean_parser.EuclideanParser()
-    matrix = p.parse("../utils/instances/kroA100.tsp")
+    matrix = p.parse("../utils/instances/kroA200.tsp")
     points = p.get_points()
 
     a_moves = [MoveType.NODE_SWAP_IN_A, MoveType.NODE_SWAP_IN_B, MoveType.NODE_SWAP_BETWEEN_AB]
@@ -25,20 +35,24 @@ def run():
     random_moves = [mt for mt in MoveType]
 
     solutions = [
-        #Solution("Random Wandering", RandomLocalSearchSolver, random_moves),
-        #Solution("Greedy (nodes)", GreedyLocalSolver, a_moves),
-        #Solution("Steep (nodes)", SteepLocalSolver, a_moves),
-        #Solution("Greedy (edges)", GreedyLocalSolver, b_moves, Neighbourhood_opt),
-        #Solution("Steep (edges)", SteepLocalSolver, b_moves)
-        #Solution("TEST", OptLocalSolver, b_moves, Neighbourhood_opt)
-        Solution("test", CandidateSolver, c_moves, Neighbourhood)
+        Solution("Steep", SteepLocalSolver, b_moves, Neighbourhood),
+        Solution("Memory", OptLocalSolver, b_moves, Neighbourhood_opt),
+        Solution("Candidate", CandidateSolver, c_moves, NeighbourhoodCandidate)
         ]
 
-    for i in range(0, 1):
+    greedy_results = []
+    greedy_times = []
+
+    for i in range(0, 3):
         print(f"Running iteration #{i}")
+        greedy_start = time.time()
 
         instance = GreedyCycle(matrix, starting_point=i).solve()
-        #instance = RandomSolver(matrix, starting_point=i).solve()
+
+        duration = round(time.time() - greedy_start, 3)
+        greedy_times.append(duration)
+        greedy_results.append(calculate_cycle_len(matrix, instance))
+        print(f"Instance #{i} is ready")
 
         for solution in solutions:
             solution.find(matrix, instance)
@@ -49,8 +63,21 @@ def run():
         plot = Plot(solution.solver_name)
         plot.draw(solution.best_instance, points)
 
+    print(f"""
+---- Solved with Greedy Cycle ----
+> Results:
+\tmean:\t\tmin:\t\tmax:
+\t{np.mean(greedy_results)}; \t{np.min(greedy_results)}; \t{np.max(greedy_results)};
+
+> Times:
+\tmean:\t\tmin:\t\tmax:
+\t{np.mean(greedy_times)}; \t{np.min(greedy_times)}; \t{np.max(greedy_times)};
+""")
+    plot = Plot("Greedy Cycle")
+    plot.draw(solution.best_instance, points)
+
 
 if __name__ == "__main__":
     run()
 else:
-    print("IMO2")
+    print("IMO3")
