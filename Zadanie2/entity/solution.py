@@ -45,7 +45,7 @@ class Solution:
             for i, node in enumerate(cycle):
                 total += matrix[cycle[i-1], node]
 
-        if not (len(cycles[0]) == len(cycles[1]) == 50):
+        if not (len(cycles[0]) == len(cycles[1])):
             return
 
         if total < self.best_result:

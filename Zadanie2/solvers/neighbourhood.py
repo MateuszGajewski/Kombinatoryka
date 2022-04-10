@@ -52,13 +52,13 @@ class Neighbourhood(ABC):
         elif move.type == MoveType.CANDIDATE_IN_B:
             self.cycleB = self.make_candidate_move(self.cycleB, move)
 
-
         else:
             print("Outstanding move, but it's not implemented")
+
     def make_candidate_move(self, cycle, move):
         if move.s1 > move.s2:
             move.s1, move.s2 = move.s2, move.s1
-        print(move)
+        # print(move)
         if move.direction == 1:
             p1 = cycle[:move.s1+1]
             p2 = cycle[move.s1+1: move.s2+1]
@@ -73,8 +73,6 @@ class Neighbourhood(ABC):
             p3 = cycle[move.s2:]
             cycle = p1 + p2 + p3
         return cycle
-
-
 
 
 
@@ -126,9 +124,9 @@ class Neighbourhood(ABC):
             return self.get_edge_swaps_in_cycle(self.cycleB, i, j, step, move_type)
 
         elif move_type == MoveType.CANDIDATE_IN_A:
-            return self.get_candidate_moves_in_cycle(self.cycleA, 0, move_type, 10)
+            return self.get_candidate_moves_in_cycle(self.cycleA, i, move_type, n=10)
         elif move_type == MoveType.CANDIDATE_IN_B:
-            return self.get_candidate_moves_in_cycle(self.cycleB, 0, move_type, 10)
+            return self.get_candidate_moves_in_cycle(self.cycleB, i, move_type, n=10)
         else:
             return []
 
@@ -181,21 +179,22 @@ class Neighbourhood(ABC):
     def get_edge_swaps_in_cycle(self, cycle, s1, s2, step, move_type):
         # solution = [Move(który, z którym, jaka zmiana, jaki typ)]
         solutions = []
+        last_i = len(cycle)-1
 
         for i in range(s1, np.sign(step) * (s1 + len(self.cycleA)), step):
             for j in range(s2, (s2 + len(self.cycleB)) * np.sign(step), step):
                 if i != j:
                     real_i = i % len(cycle)
                     buddy_i = (i + 1 * np.sign(step)) % len(cycle)
-                    if real_i > buddy_i or (real_i == 0 and buddy_i == 49):
-                        if not (real_i == 49 and buddy_i == 0):
+                    if real_i > buddy_i or (real_i == 0 and buddy_i == last_i):
+                        if not (real_i == last_i and buddy_i == 0):
                             real_i, buddy_i = buddy_i, real_i  # lower index should be first (unless 49--0), swap them
                     e1 = Edge(real_i, buddy_i, self.matrix[cycle[real_i]][cycle[buddy_i]])
 
                     real_j = j % len(cycle)
                     buddy_j = (j + 1 * np.sign(step)) % len(cycle)
-                    if real_j > buddy_j or (real_j == 0 and buddy_j == 49):
-                        if not (real_j == 49 and buddy_j == 0):
+                    if real_j > buddy_j or (real_j == 0 and buddy_j == last_i):
+                        if not (real_j == last_i and buddy_j == 0):
                             real_j, buddy_j = buddy_j, real_j  # lower index should be first (unless 49--0), swap them
                     e2 = Edge(real_j, buddy_j, self.matrix[cycle[real_j]][cycle[buddy_j]])
 
