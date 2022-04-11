@@ -5,7 +5,7 @@ class SteepLocalSolver(LocalSearchSolver):
 
     def solve(self):
         i = 0
-        while i < 400:
+        while i < 300:
             move = self.neighbourhood.get_best_move()
             # print(move)
 
@@ -15,4 +15,7 @@ class SteepLocalSolver(LocalSearchSolver):
             else:
                 break
             i += 1
+            if i % 50 == 0:
+                print(f"Steep #{i}")
+
         return [self.neighbourhood.cycleA, self.neighbourhood.cycleB]

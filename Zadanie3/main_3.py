@@ -37,13 +37,13 @@ def run():
     solutions = [
         Solution("Steep", SteepLocalSolver, b_moves, Neighbourhood),
         Solution("Memory", OptLocalSolver, b_moves, Neighbourhood_opt),
-        Solution("Candidate", CandidateSolver, c_moves, NeighbourhoodCandidate)
+        Solution("Candidate", CandidateSolver, random_moves, NeighbourhoodCandidate)
         ]
 
     greedy_results = []
     greedy_times = []
 
-    for i in range(0, 3):
+    for i in range(0, 100):
         print(f"Running iteration #{i}")
         greedy_start = time.time()
 
@@ -55,7 +55,8 @@ def run():
         print(f"Instance #{i} is ready")
 
         for solution in solutions:
-            solution.find(matrix, instance)
+            cycles = instance.copy()
+            solution.find(matrix, cycles)
 
     for solution in solutions:
         print(solution)
