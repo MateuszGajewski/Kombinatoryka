@@ -6,7 +6,7 @@ class MLSSolver(LocalSearchSolver):
         self.neighbourhood.generate_all_moves()
 
         i = 0
-        while i < 100:
+        while i < 1000:
             move = self.neighbourhood.get_best_move()
             # print(move)
 
@@ -25,6 +25,6 @@ class MLSSolver(LocalSearchSolver):
 
             i += 1
             if i % 50 == 0:
-                print(f"Memory #{i}")
+                print(f"MLSSolver #{i}")
 
         return [self.neighbourhood.cycleA, self.neighbourhood.cycleB]

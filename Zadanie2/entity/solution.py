@@ -38,6 +38,7 @@ class Solution:
         self.times.append(duration)
         self.calculate_result(matrix, cycles)
         print(f"{self.solver_name} done - {duration}s")
+        return duration
 
     def calculate_result(self, matrix, cycles):
         total = 0

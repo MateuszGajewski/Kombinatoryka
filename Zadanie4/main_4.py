@@ -1,20 +1,16 @@
-import time
-import numpy as np
+from copy import deepcopy
 
-from Zadanie1.solvers.greedy_cycle import GreedyCycle
 from Zadanie1.solvers.random_solver import RandomSolver
+from Zadanie4.HugePerturbation import HugePerturbation
+from Zadanie4.ILSSolution import ILSSolution
+from Zadanie4.SmallPerturbation import SmallPerturbation
 from utils.instance_parser import euclidean_parser
 from utils.graph_plotting.plot import Plot
 from Zadanie2.entity.move_type import MoveType
 from Zadanie2.entity.solution import Solution
 from Zadanie2.solvers.neighbourhood import Neighbourhood
 from Zadanie2.solvers.greedy_local_search import GreedyLocalSolver
-from Zadanie2.solvers.steep_local_search import SteepLocalSolver
-from Zadanie2.solvers.random_local_search import RandomLocalSearchSolver
 from Zadanie3.neighbourhood_opt import Neighbourhood_opt
-from Zadanie3.neighbourhood_candidate import NeighbourhoodCandidate
-from Zadanie3.opt_moves_list import OptLocalSolver
-from Zadanie3.candidate_solver import CandidateSolver
 from Zadanie4.MSLSSolver import MLSSolver
 
 
@@ -32,34 +28,31 @@ def run():
 
     a_moves = [MoveType.NODE_SWAP_IN_A, MoveType.NODE_SWAP_IN_B, MoveType.NODE_SWAP_BETWEEN_AB]
     b_moves = [MoveType.EDGE_SWAP_IN_A, MoveType.EDGE_SWAP_IN_B, MoveType.NODE_SWAP_BETWEEN_AB]
-    c_moves = [MoveType.CANDIDATE_IN_A, MoveType.CANDIDATE_IN_B, MoveType.NODE_SWAP_BETWEEN_AB]
     random_moves = [mt for mt in MoveType]
 
-    solutions = [
-        Solution("MLSS", MLSSolver, b_moves, Neighbourhood_opt),
-            ]
+    msls_solution = Solution("MSLS", MLSSolver, b_moves, Neighbourhood_opt)
+    ils_solutions = [
+        ILSSolution("ILS1", GreedyLocalSolver, Neighbourhood, SmallPerturbation(n=10), True),
+        ILSSolution("ILS2", GreedyLocalSolver, Neighbourhood, HugePerturbation(percent=20), True),
+        ILSSolution("ILS2a", GreedyLocalSolver, Neighbourhood, HugePerturbation(percent=20), False),
+    ]
 
-    greedy_results = []
-    greedy_times = []
+    for i in range(0, 1):
+        instance = RandomSolver(matrix, starting_point=None).solve()
 
-    for i in range(0, 10):
-        print(f"Running iteration #{i}")
-        greedy_start = time.time()
+        cycles = deepcopy(instance)
+        time_limit = msls_solution.find(matrix, cycles)
 
-        instance = GreedyCycle(matrix, starting_point=None).solve()
+        for ils_solution in ils_solutions:
+            cycles = deepcopy(instance)
+            ils_solution.find(matrix, cycles, time_limit=time_limit)
 
-        duration = round(time.time() - greedy_start, 3)
-        greedy_times.append(duration)
-        greedy_results.append(calculate_cycle_len(matrix, instance))
-        print(f"Instance #{i} is ready")
+    print(msls_solution)
+    plot = Plot(msls_solution.solver_name)
+    plot.draw(msls_solution.best_instance, points)
 
-        for solution in solutions:
-            cycles = instance.copy()
-            solution.find(matrix, cycles)
-
-    for solution in solutions:
+    for solution in ils_solutions:
         print(solution)
-
         plot = Plot(solution.solver_name)
         plot.draw(solution.best_instance, points)
 
