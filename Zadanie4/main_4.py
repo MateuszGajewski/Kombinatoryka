@@ -9,6 +9,7 @@ from utils.graph_plotting.plot import Plot
 from Zadanie2.entity.move_type import MoveType
 from Zadanie2.entity.solution import Solution
 from Zadanie2.solvers.neighbourhood import Neighbourhood
+from Zadanie2.solvers.steep_local_search import SteepLocalSolver
 from Zadanie2.solvers.greedy_local_search import GreedyLocalSolver
 from Zadanie3.neighbourhood_opt import Neighbourhood_opt
 from Zadanie4.MSLSSolver import MLSSolver
@@ -32,12 +33,12 @@ def run():
 
     msls_solution = Solution("MSLS", MLSSolver, b_moves, Neighbourhood_opt)
     ils_solutions = [
-        ILSSolution("ILS1", GreedyLocalSolver, Neighbourhood, SmallPerturbation(n=10), True),
-        ILSSolution("ILS2", GreedyLocalSolver, Neighbourhood, HugePerturbation(percent=20), True),
-        ILSSolution("ILS2a", GreedyLocalSolver, Neighbourhood, HugePerturbation(percent=20), False),
+        ILSSolution("ILS1", SteepLocalSolver, Neighbourhood_opt, SmallPerturbation(n=10), True),
+        ILSSolution("ILS2", SteepLocalSolver, Neighbourhood_opt, HugePerturbation(percent=20), True),
+        ILSSolution("ILS2a", SteepLocalSolver, Neighbourhood_opt, HugePerturbation(percent=20), False),
     ]
 
-    for i in range(0, 1):
+    for i in range(0, 10):
         instance = RandomSolver(matrix, starting_point=None).solve()
 
         cycles = deepcopy(instance)

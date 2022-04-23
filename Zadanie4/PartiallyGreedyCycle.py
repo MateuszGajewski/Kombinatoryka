@@ -17,7 +17,6 @@ class PartiallyGreedyCycle:
             del self.free_points[pid]
             cycle_id = 1 - cycle_id
 
-        print(len(self.cycles[0]), len(self.cycles[1]))
         return self.cycles
 
     def find_point_to_add(self, cycle):

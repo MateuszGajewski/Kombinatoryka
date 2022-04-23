@@ -21,9 +21,9 @@ class ILSSolver:
         start = time()
         move_types = [mt for mt in MoveType]
         neighbourhood = self.neighbourhood_class(self.matrix, initial_instance[0], initial_instance[1], move_types)
-        problem_solver = self.ls_solver(neighbourhood)
-
-        best_cycles = problem_solver.solve()
+        # problem_solver = self.ls_solver(neighbourhood)
+        # best_cycles = problem_solver.solve()
+        best_cycles = self.go_steep(neighbourhood, start)
         best_result = self.calculate_result(best_cycles)
 
         while time() - start < self.time_limit:
@@ -32,10 +32,11 @@ class ILSSolver:
 
             if self.with_local_repair is True:
                 neighbourhood = Neighbourhood(self.matrix, cycles[0], cycles[1], move_types)
-                problem_solver = self.ls_solver(neighbourhood)
-                cycles = problem_solver.solve()
+                # problem_solver = self.ls_solver(neighbourhood)
+                # cycles = problem_solver.solve()
+                cycles = self.go_steep(neighbourhood, start)
 
-            new_result = self.calculate_result(best_cycles)
+            new_result = self.calculate_result(cycles)
             if new_result < best_result:
                 best_cycles = cycles
                 best_result = new_result
@@ -52,3 +53,12 @@ class ILSSolver:
             return np.inf
 
         return total
+
+    def go_steep(self, neighbourhood, time_start):
+        while time() - time_start < self.time_limit:
+            move = neighbourhood.get_best_move()
+            if move is not None and move.delta < 0:
+                neighbourhood.make_move(move)
+            else:
+                break
+        return [neighbourhood.cycleA, neighbourhood.cycleB]
