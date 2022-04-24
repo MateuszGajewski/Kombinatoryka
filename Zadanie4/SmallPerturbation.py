@@ -1,4 +1,5 @@
 import random
+from copy import deepcopy
 from Zadanie2.entity.edge import Edge
 from Zadanie2.entity.move import Move
 from Zadanie2.entity.move_type import MoveType
@@ -37,17 +38,18 @@ class SmallPerturbation(Perturbation):
 
     def __call__(self, cycles, instance):
         n = len(cycles[0])
+        new_cycles = deepcopy(cycles)
         for _ in range(self.to_change):
             types = [MoveType.NODE_SWAP_BETWEEN_AB, MoveType.EDGE_SWAP_IN_A, MoveType.EDGE_SWAP_IN_B]
             i, j = int(n * random.random()), int(n * random.random())
             move_type = random.choice(types)
             if move_type == MoveType.NODE_SWAP_BETWEEN_AB:
-                cycles[0][i], cycles[1][j] = cycles[1][j], cycles[0][i]
+                new_cycles[0][i], new_cycles[1][j] = new_cycles[1][j], new_cycles[0][i]
             else:
                 while abs(i-j) < 2 or abs(i-j) == n-1:
                     i, j = int(n * random.random()), int(n * random.random())
                 move = get_random_edge_swap(i, j, n)
                 cid = 0 if move_type == MoveType.EDGE_SWAP_IN_A else 1
-                cycles[cid] = swap_edges(cycles[cid], move)
+                new_cycles[cid] = swap_edges(new_cycles[cid], move)
 
-        return cycles
+        return new_cycles

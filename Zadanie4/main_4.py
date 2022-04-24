@@ -33,9 +33,9 @@ def run():
 
     msls_solution = Solution("MSLS", MLSSolver, b_moves, Neighbourhood_opt)
     ils_solutions = [
-        ILSSolution("ILS1", SteepLocalSolver, Neighbourhood_opt, SmallPerturbation(n=10), True),
-        ILSSolution("ILS2", SteepLocalSolver, Neighbourhood_opt, HugePerturbation(percent=20), True),
-        ILSSolution("ILS2a", SteepLocalSolver, Neighbourhood_opt, HugePerturbation(percent=20), False),
+        ILSSolution("ILS1", GreedyLocalSolver, Neighbourhood, SmallPerturbation(n=10), True),
+        ILSSolution("ILS2", GreedyLocalSolver, Neighbourhood, HugePerturbation(percent=20), True),
+        ILSSolution("ILS2a", GreedyLocalSolver, Neighbourhood, HugePerturbation(percent=20), False),
     ]
 
     for i in range(0, 10):
