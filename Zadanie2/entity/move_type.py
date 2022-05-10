@@ -11,8 +11,3 @@ class MoveType(Enum):
 
     # neighbourhood #2
     NODE_SWAP_BETWEEN_AB = 5
-
-    # candidate
-    CANDIDATE_IN_A = 6
-    CANDIDATE_IN_B = 7
-
