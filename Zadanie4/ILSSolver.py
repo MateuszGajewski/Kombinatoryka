@@ -3,8 +3,6 @@ from copy import deepcopy
 import numpy as np
 
 from Zadanie2.entity.move_type import MoveType
-from Zadanie2.solvers.local_search_solver import LocalSearchSolver
-from Zadanie2.solvers.neighbourhood import Neighbourhood
 
 
 class ILSSolver:
@@ -32,7 +30,7 @@ class ILSSolver:
             cycles = self.perturbation(cycles, self.matrix)
 
             if self.with_local_repair is True:
-                neighbourhood = Neighbourhood(self.matrix, cycles[0], cycles[1], move_types)
+                neighbourhood = self.neighbourhood_class(self.matrix, cycles[0], cycles[1], move_types)
                 # problem_solver = self.ls_solver(neighbourhood)
                 # cycles = problem_solver.solve()
                 cycles = self.go_steep(neighbourhood, start)
