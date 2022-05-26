@@ -25,17 +25,17 @@ def calculate_cycle_len(matrix, cycles):
 
 def run():
     p = euclidean_parser.EuclideanParser()
-    matrix = p.parse("../utils/instances/kroA200.tsp")
+    matrix = p.parse("../utils/instances/kroB200.tsp")
     points = p.get_points()
 
     evo_solutions = [
-        EvoSolution("Evo", GreedyLocalSolver, Neighbourhood, with_local_repair=True),
-        EvoSolution("Evo-a", GreedyLocalSolver, Neighbourhood, with_local_repair=False),
+        EvoSolution("Evo", SteepLocalSolver, Neighbourhood, with_local_repair=True),
+        EvoSolution("Evo-a", SteepLocalSolver, Neighbourhood, with_local_repair=False),
     ]
 
-    for i in range(0, 2):
+    for i in range(0, 3):
         for evo_solution in evo_solutions:
-            time_limit = 60
+            time_limit = 60*10
             evo_solution.find(matrix, time_limit=time_limit)
 
     for solution in evo_solutions:

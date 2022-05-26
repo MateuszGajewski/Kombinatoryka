@@ -16,7 +16,8 @@ class PartiallyGreedyCycle:
             assert isinstance(new_position, int)
             self.cycles[cycle_id].insert(new_position, new_point)
             del self.free_points[pid]
-            cycle_id = 1 - cycle_id
+            if len(self.cycles[cycle_id]) >= len(self.cycles[1-cycle_id]):
+                cycle_id = 1 - cycle_id
 
         return self.cycles
 

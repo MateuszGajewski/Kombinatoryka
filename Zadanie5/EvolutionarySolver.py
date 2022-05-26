@@ -1,25 +1,43 @@
 from time import time
 from copy import deepcopy
 import numpy as np
-
+import matplotlib.pyplot as plt
 import random
+
 from Zadanie1.solvers.random_solver import RandomSolver
 from Zadanie2.entity.move_type import MoveType
 from Zadanie4.PartiallyGreedyCycle import PartiallyGreedyCycle
 
 
+def plot_scores(best, worst):
+    fig, ax = plt.subplots(figsize=(12, 8))
+    print(f"Plotting scores from {len(best)} iterations...")
+    xs = [*range(len(best))]
+    ax.plot(xs, best, label='best', color='g')
+    ax.plot(xs, worst, label='worst', color='r')
+    ax.legend()
+    plt.show()
+
+
 class EvolutionarySolver:
-    def __init__(self, matrix, time_limit, ls_solver, neighbourhood, with_local_repair, elite_pop=20):
+    def __init__(self, matrix, time_limit, ls_solver, neighbourhood,
+                 use_local_repair=False, use_perturbation=True, perturbation_chance=0.1, elite_pop=20):
         self.matrix = matrix
         self.dimension = len(matrix)
         self.time_limit = time_limit
         self.ls_solver = ls_solver
         self.neighbourhood_class = neighbourhood
-        self.with_local_repair = with_local_repair
+        self.use_local_repair = use_local_repair
+        self.use_perturbation = use_perturbation
+        self.perturbation_chance = perturbation_chance
         self.n = elite_pop
 
     def solve(self):
         start = time()
+
+        # best_scores = []
+        # worst_scores = []
+        iterations = 0
 
         population = [self.generate_initial_solution() for _ in range(self.n)]
         scores = [self.calculate_result(solution) for solution in population]
@@ -27,9 +45,13 @@ class EvolutionarySolver:
 
         while time() - start < self.time_limit:
             pi, pj = int(self.n * random.random()), int(self.n * random.random())
+            while pi == pj:
+                pj = int(self.n * random.random())
+
             new_solution = self.recombine(population[pi], population[pj])
 
-            if self.with_local_repair is True:
+            if self.use_local_repair is True:
+                # new_solution = self.ls_solver(new_solution)
                 neighbourhood = self.neighbourhood_class(self.matrix, *new_solution, [mt for mt in MoveType])
                 new_solution = self.go_steep(neighbourhood, start)
 
@@ -45,6 +67,13 @@ class EvolutionarySolver:
                 population[worst_idx] = new_solution
                 scores[worst_idx] = new_score
 
+            # best_scores.append(min(scores))
+            # worst_scores.append(max(scores))
+            iterations += 1
+
+        # time's up, return the best solution
+        # plot_scores(best_scores, worst_scores)
+        print(iterations)
         best_idx = min(range(self.n), key=scores.__getitem__)
         return time() - start, population[best_idx], scores[best_idx]
 
@@ -69,8 +98,10 @@ class EvolutionarySolver:
         return [neighbourhood.cycleA, neighbourhood.cycleB]
 
     def generate_initial_solution(self):
+        instance = RandomSolver(self.matrix).solve()
+        # cycles = self.ls_solver(instance)
         move_types = [mt for mt in MoveType]
-        neighbourhood = self.neighbourhood_class(self.matrix, *(RandomSolver(self.matrix).solve()), move_types)
+        neighbourhood = self.neighbourhood_class(self.matrix, *instance, move_types)
         problem_solver = self.ls_solver(neighbourhood)
         cycles = problem_solver.solve()
         return cycles
@@ -102,6 +133,13 @@ class EvolutionarySolver:
                     cycle1[i] = -1
                     free_points.append(cycle1[(i+1) % n1])
                     cycle1[(i+1) % n1] = -1
+
+            if self.use_perturbation:
+                for i, node in enumerate(cycle1):
+                    # remove shared node with a given chance
+                    if node != -1 and random.random() < self.perturbation_chance:
+                        free_points.append(node)
+                        cycle1[i] = -1
 
             for i in range(1, n1):
                 i0, i1, i2 = cycle1[(i-1) % n1], cycle1[i], cycle1[(i+1) % n1]
