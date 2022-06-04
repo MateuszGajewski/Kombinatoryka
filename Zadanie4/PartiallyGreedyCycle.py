@@ -13,17 +13,19 @@ class PartiallyGreedyCycle:
         cycle_id = 0
         while len(self.free_points) > 0:  # while there are free points
             new_point, new_position, pid = self.find_point_to_add(self.cycles[cycle_id])
+            assert isinstance(new_position, int)
             self.cycles[cycle_id].insert(new_position, new_point)
             del self.free_points[pid]
-            cycle_id = 1 - cycle_id
+            if len(self.cycles[cycle_id]) >= len(self.cycles[1-cycle_id]):
+                cycle_id = 1 - cycle_id
 
         return self.cycles
 
     def find_point_to_add(self, cycle):
-        best_point = None
+        best_point = self.free_points[0]
         best_distance = np.inf
-        best_place = np.nan
-        best_id = None
+        best_place = 0
+        best_id = 0
 
         for i, node in enumerate(cycle):
             for pid, potential_point in enumerate(self.free_points):
